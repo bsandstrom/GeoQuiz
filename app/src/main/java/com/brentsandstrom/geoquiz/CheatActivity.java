@@ -48,12 +48,29 @@ public class CheatActivity extends AppCompatActivity {
         setResult(RESULT_OK, data);
     }
 
+    /**
+     * Create a new intent that will open a CheatActivity.
+     *
+     * @param packageContext The ActivityContext. Not ApplicationContext. Ex: QuizActivity.this is
+     *                       good, getApplicationContext() bad.
+     * @param answerIsTrue   The answer to the selected question. Determines what the user sees if
+     *                       they cheat.
+     * @return The Intent you'll need to start CheatActivity
+     */
     public static Intent newIntent(Context packageContext, boolean answerIsTrue) {
         Intent intent = new Intent(packageContext, CheatActivity.class);
         intent.putExtra(EXTRA_ANSWER_IS_TRUE, answerIsTrue);
         return intent;
     }
 
+    /**
+     * After running startActivityForResult on this activity, you'll get an intent
+     * that contains a boolean extra that is true if the user cheated. This method
+     * gets that boolean from the intent for you.
+     *
+     * @param result The result of startActivityForResult
+     * @return True if the user cheated
+     */
     public static boolean wasAnswerShown(Intent result) {
         return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
     }
