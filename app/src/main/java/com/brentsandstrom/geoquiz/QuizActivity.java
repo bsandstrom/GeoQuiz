@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity {
 
+    //Views
     private Button mTrueButton;
     private Button mFalseButton;
     private Button mNextButton;
@@ -19,8 +20,10 @@ public class QuizActivity extends AppCompatActivity {
     private Button mPrevButton;
     private TextView mQuestionTextView;
 
+    //Constants
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String KEY_CHEATS_USED = "cheats_used";
     private static final int REQUEST_CODE_CHEAT = 0;
 
     private Question[] mQuestionBank = new Question[]{
@@ -32,8 +35,11 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true)
     };
 
+    //Other
     private int mCurrentIndex = 0;
     private boolean mIsCheater;
+    private int mCheatsAllowed = 3;
+    private int mCheatsUsed = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +48,19 @@ public class QuizActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
 
+        //Get views before loading saved state
+        mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
+        mTrueButton = (Button) findViewById(R.id.true_button);
+        mFalseButton = (Button) findViewById(R.id.false_button);
+        mNextButton = (Button) findViewById(R.id.next_button);
+        mPrevButton = (Button) findViewById(R.id.prev_button);
+        mCheatButton = (Button) findViewById(R.id.cheat_button);
+
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mCheatsUsed = savedInstanceState.getInt(KEY_CHEATS_USED, 0);
+            if(mCheatsUsed>=mCheatsAllowed) mCheatButton.setEnabled(false);
         }
-
-        mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
-
-        mTrueButton = (Button) findViewById(R.id.true_button);
 
         mTrueButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +69,6 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        mFalseButton = (Button) findViewById(R.id.false_button);
         mFalseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,7 +76,6 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        mNextButton = (Button) findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,7 +85,6 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        mPrevButton = (Button) findViewById(R.id.prev_button);
         mPrevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +96,6 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
-        mCheatButton = (Button) findViewById(R.id.cheat_button);
         mCheatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,7 +105,6 @@ public class QuizActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_CODE_CHEAT); 
             }
         });
-
 
         updateQuestion();
     }
@@ -113,6 +120,13 @@ public class QuizActivity extends AppCompatActivity {
                 return;
             }
             mIsCheater = CheatActivity.wasAnswerShown(data);
+            if(mIsCheater) {
+                mCheatsUsed++;
+                if(mCheatsUsed >= mCheatsAllowed){
+                    mCheatButton.setEnabled(false);
+                    Toast.makeText(this, R.string.no_more_cheats_toast, Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 
@@ -167,6 +181,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putInt(KEY_CHEATS_USED, mCheatsUsed);
     }
 
     @Override
