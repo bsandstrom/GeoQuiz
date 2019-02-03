@@ -42,6 +42,12 @@ public class CheatActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        // TODO add more here to prevent cheating.
+    }
+
     private void setAnswerShownResult(boolean isAnswerShown){
         Intent data = new Intent();
         data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
