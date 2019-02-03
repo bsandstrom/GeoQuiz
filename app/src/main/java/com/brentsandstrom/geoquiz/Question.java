@@ -11,11 +11,13 @@ public class Question {
 
     private boolean mHasAnswer;
     private boolean mUserAnswer;
+    private boolean mUserCheated;
 
     public Question(int textResId, boolean answerTrue){
         mTextResId = textResId;
         mAnswerTrue = answerTrue;
         mHasAnswer = false;
+        mUserCheated = false;
     }
 
     public int getTextResId() {
@@ -50,5 +52,13 @@ public class Question {
         else {
             return false;
         }
+    }
+
+    public void userCheated(){
+        this.mUserCheated = true;
+    }
+
+    public boolean getUserCheated(){
+        return this.mUserCheated;
     }
 }
